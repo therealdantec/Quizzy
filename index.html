@@ -26,6 +26,14 @@
             font-size: 35px;
             z-index: 2;
         }
+
+        #buttons {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            z-index: 3; /* Add this line */
+        }
+
         
                 .button {
                     display: block;
@@ -81,6 +89,10 @@
                     bottom: 0;
                     right: 0;
                 }
+
+                .no-underline {
+                    text-decoration: none;
+                }
             </style>
         </head>
         <body>
@@ -90,9 +102,11 @@
             <div class="quadrant green"></div>
             <div class="quadrant yellow"></div>
             
-            <div style="display: flex; flex-direction: column; align-items: center;">
+            <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
                 <button class="button" style="animation-delay: 0s;">Create Quiz</button>
-                <button class="button" style="animation-delay: 0.5s;">Join Quiz</button>
+                <a href="join_quiz.html" class="no-underline">
+                    <button class="button" style="animation-delay: 0.5s;">Join Quiz</button>
+                </a>
                 <button class="button" style="animation-delay: 1s;">Login</button>
             </div>
         </body>
