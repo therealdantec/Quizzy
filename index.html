@@ -10,6 +10,22 @@
             height: 100vh;
             margin: 0;
         }
+
+        #title {
+            display: block;
+            position: absolute;
+            width: 300px; /* Increase the width to make the buttons bigger */
+            height: 55px; /* Increase the height to make the buttons bigger */
+            top: 10px;
+            left: 10px;
+            text-align: center;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid black; /* Add a black border */
+            border-radius: 5px;
+            font-size: 35px;
+            z-index: 2;
+        }
         
                 .button {
                     display: block;
@@ -68,6 +84,7 @@
             </style>
         </head>
         <body>
+            <div id="title">Welcome To Quizzy</div>
             <div class="quadrant red"></div>
             <div class="quadrant blue"></div>
             <div class="quadrant green"></div>
