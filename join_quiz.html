@@ -1,13 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Join Quiz</title>
-</head>
-<body>
-    <form>
-        <input type="text" id="quizCode" name="quizCode" placeholder="Enter Quiz Code">
-        <input type="submit" value="ENTER">
-    </form>
-    <button onclick="window.location.href = 'index.html';">Back</button>
-</body>
-</html>
+    <title>Quizzy</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #title {
+            display: block;
+            position: absolute;
+            width: 300px; /* Increase the width to make the box bigger */
+            height: 55px; /* Increase the height to make the box bigger */
+            top: 10px;
+            left: 10px;
+            text-align: center;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid black; /* Add a black border */
+            border-radius: 5px;
+            font-size: 35px;
+            z-index: 2;
+        }
+
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 3;
+        }
+
+                .button {
+                    display: block;
+                    width: 250px; /* Increase the width to make the buttons bigger */
+                    height: 60px; /* Increase the height to make the buttons bigger */
+                    margin-bottom: 20px;
+                    text-align: center;
+                    font-size: 25px;
+                    border: 1px solid black; /* Add a black border */
+                    border-radius: 5px;
+                    cursor: pointer;
+                    z-index: 1; /* Add this line */
+                }
+                
+                
+                .quadrant {
+                    width: 50%;
+                    height: 50%;
+                    position: absolute;
+                }
+                
+                .red {
+                    background-color: red;
+                    top: 0;
+                    left: 0;
+                }
+                
+                .blue {
+                    background-color: blue;
+                    top: 0;
+                    right: 0;
+                }
+                
+                .green {
+                    background-color: green;
+                    bottom: 0;
+                    left: 0;
+                }
+                
+                .yellow {
+                    background-color: yellow;
+                    bottom: 0;
+                    right: 0;
+                }
+
+                .no-underline {
+                    text-decoration: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="title">Join Quiz</div>
+            <div class="quadrant red"></div>
+            <div class="quadrant blue"></div>
+            <div class="quadrant green"></div>
+            <div class="quadrant yellow"></div>
+            
+            <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
+                <form>
+                    <input type="text" id="code" name="code" placeholder="Enter Code">
+                    <input type="submit" value="Submit">
+                </form>
+                <button class="button" onclick="window.location.href = 'index.html';">Back</button>
+            </div>
+        </body>
+        </html>
