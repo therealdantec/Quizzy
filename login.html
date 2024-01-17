@@ -46,6 +46,18 @@
         align-items: center;
         }
 
+        #username {
+            width: 300px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        #password {
+            width: 300px;
+            height: 40px;
+            font-size: 20px;
+        }
+
                 .button {
                     display: block;
                     width: 250px; /* Increase the width to make the buttons bigger */
@@ -105,8 +117,8 @@
 
             <div id="buttons" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
                 <form action="/login" method="post">
-                    <input type="text" id="username" name="username" placeholder="Enter Username"><br>
-                    <input type="password" id="password" name="password" placeholder="Enter Password"><br>
+                    <input type="text" id="username" name="username" placeholder="Username..."><br>
+                    <input type="password" id="password" name="password" placeholder="Password..."><br>
                     <input type="submit" value="Enter" class="button">
                 </form>
                 <button class="button" onclick="window.location.href = 'menu.html';">Back</button>
