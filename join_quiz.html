@@ -40,6 +40,12 @@
             z-index: 3;
         }
 
+        #buttons form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        }
+
                 .button {
                     display: block;
                     width: 250px; /* Increase the width to make the buttons bigger */
@@ -100,7 +106,7 @@
             <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
                 <form>
                     <input type="text" id="code" name="code" placeholder="Enter Code">
-                    <input type="submit" value="Submit">
+                    <input type="submit" value="Enter" class="button">
                 </form>
                 <button class="button" onclick="window.location.href = 'menu.html';">Back</button>
             </div>
