@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quizzy</title>
+    <title>Create Account</title>
     <style>
         body {
             display: flex;
@@ -28,10 +28,34 @@
         }
 
         #buttons {
-            display: flex; 
-            flex-direction: column; 
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            z-index: 3; /* Add this line */
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 3;
+        }
+
+        #buttons form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        }
+
+        #username {
+            width: 300px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        #password {
+            width: 300px;
+            height: 40px;
+            font-size: 20px;
         }
 
                 .button {
@@ -85,22 +109,21 @@
             </style>
         </head>
         <body>
-            <div id="title">Welcome To Quizzy</div>
+            <div id="title">Create Account</div>
             <div class="quadrant orange"></div>
             <div class="quadrant blue"></div>
             <div class="quadrant orangeB"></div>
             <div class="quadrant blueB"></div>
-            
-            <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
-                <a href="create_account.html" class="no-underline">
-                    <button class="button">Create Account</button>
-                </a>
-                <a href="join_quiz.html" class="no-underline">
-                    <button class="button">Join Quiz</button>
-                </a>
-                <a href="login.html" class="no-underline">
-                    <button class="button">Login</button>
-                </a>
+
+            <div id="buttons" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                <form method="post" action="/create_account">
+                    <input type="text" id="username" name="username" placeholder="Username..."><br>
+                    <input type="password" id="password" name="password" placeholder="Password..."><br>
+                    <input type="submit" value="Create Account" class="button">
+                </form>
+                <a href="/" class="no-underline">
+                    <button class="button">Back</button>
+                </a>            
             </div>
         </body>
         </html>

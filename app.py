@@ -24,7 +24,7 @@ def login():
         with open('users.json', 'r') as f:
             users = json.load(f)
         if username in users and users[username] == password:
-            return redirect(url_for('create_quiz'))
+            return redirect(url_for('quiz_homepage'))  # changed from 'create_quiz' to 'home'
     return render_template('login.html')
 
 @app.route('/create_account', methods=['GET', 'POST'])
@@ -32,12 +32,15 @@ def create_account():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        with open('users.json', 'r') as f:
-            users = json.load(f)
+        try:
+            with open('users.json', 'r') as f:
+                users = json.load(f)
+        except FileNotFoundError:
+            users = {}  # If the file doesn't exist yet, start with an empty dictionary
         users[username] = password
         with open('users.json', 'w') as f:
             json.dump(users, f)
-        return redirect(url_for('create_quiz'))
+        return redirect(url_for('quiz_homepage'))  # changed from 'create_quiz' to 'home'
     return render_template('create_account.html')
 
 @app.route('/create_quiz', methods=['GET', 'POST'])
@@ -45,5 +48,9 @@ def create_quiz():
     # TODO: Add code to handle quiz creation
     return render_template('create_quiz.html')
 
+@app.route('/quiz')
+def quiz_homepage():
+    return render_template('quiz.html')  # assuming you have a home.html in your templates folder
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5500)

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Join Quiz</title>
+    <title>Login</title>
     <style>
         body {
             display: flex;
@@ -46,7 +46,13 @@
         align-items: center;
         }
 
-        #code {
+        #username {
+            width: 300px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        #password {
             width: 300px;
             height: 40px;
             font-size: 20px;
@@ -103,18 +109,21 @@
             </style>
         </head>
         <body>
-            <div id="title">Join Quiz</div>
+            <div id="title">Login</div>
             <div class="quadrant orange"></div>
             <div class="quadrant blue"></div>
             <div class="quadrant orangeB"></div>
             <div class="quadrant blueB"></div>
-            
-            <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
-                <form>
-                    <input type="text" id="code" name="code" placeholder="Enter Code"><br>
+
+            <div id="buttons" style="display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                <form action="/login" method="post">
+                    <input type="text" id="username" name="username" placeholder="Username..."><br>
+                    <input type="password" id="password" name="password" placeholder="Password..."><br>
                     <input type="submit" value="Enter" class="button">
                 </form>
-                <button class="button" onclick="window.location.href = 'menu.html';">Back</button>
+                <a href="/" class="no-underline">
+                    <button class="button">Back</button>
+                </a>
             </div>
         </body>
         </html>
