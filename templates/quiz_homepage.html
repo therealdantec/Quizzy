@@ -48,7 +48,15 @@
                     background-color: #EBB652; /* Add this line */
                 }
                 
-                
+                .rounded-rectangle {
+                    background-color: white;
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin-top: 20px;
+                    width: 1200px;
+                    height: 700px;
+                }
+
                 .quadrant {
                     width: 50%;
                     height: 50%;
@@ -95,8 +103,7 @@
                 <a href="/create_quiz" class="no-underline" style="align-self: flex-end;">
                     <button class="button">Create Quiz</button>
                 </a>
-                <div id="previousQuizzes">
-                    <!-- TODO: Add code to dynamically generate this list based on the user's previous quizzes -->
+                <div id="previousQuizzes" class="rounded-rectangle">
                     <p>Quiz 1</p>
                     <p>Quiz 2</p>
                     <p>Quiz 3</p>

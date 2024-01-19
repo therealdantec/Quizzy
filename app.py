@@ -50,7 +50,7 @@ def create_quiz():
 
 @app.route('/quiz')
 def quiz_homepage():
-    return render_template('quiz.html')  # assuming you have a home.html in your templates folder
+    return render_template('quiz_homepage.html')  # assuming you have a home.html in your templates folder
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
