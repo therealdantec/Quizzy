@@ -96,27 +96,15 @@
             <div class="quadrant orangeB"></div>
             <div class="quadrant blueB"></div>
 
-            <form action="/create_quiz" method="post">
-                <label for="quiz-title">Quiz Title:</label><br>
-                <input type="text" id="quiz-title" name="quiz-title"><br>
-            
-                <label for="question-type">Question Type:</label><br>
-                <select id="question-type" name="question-type">
-                    <option value="true-false">True/False</option>
-                    <option value="multiple-choice">Multiple Choice</option>
-                    <option value="drag-drop">Drag and Drop</option>
-                </select><br>
-            
-                <label for="question-text">Question Text:</label><br>
-                <input type="text" id="question-text" name="question-text"><br>
-            
-                <label for="correct-answer">Correct Answer:</label><br>
-                <input type="text" id="correct-answer" name="correct-answer"><br>
-            
-                <!-- Add more fields for additional questions -->
-            
+            <form id="quiz-form">
+                <div id="quiz-questions">
+                    <!-- Questions will be added here -->
+                </div>
+        
+                <button type="button" onclick="addQuestion()">Add Question</button>
                 <input type="submit" value="Create Quiz">
             </form>
-
+        
+            <script src="create_quiz.js"></script>
         </body>
         </html>
