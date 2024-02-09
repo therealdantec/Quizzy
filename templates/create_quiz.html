@@ -34,6 +34,11 @@
             z-index: 3; /* Add this line */
         }
 
+        form {
+            position: relative;
+            z-index: 10;
+        }
+
                 .button {
                     display: block;
                     width: 250px; /* Increase the width to make the buttons bigger */
@@ -90,5 +95,28 @@
             <div class="quadrant blue"></div>
             <div class="quadrant orangeB"></div>
             <div class="quadrant blueB"></div>
+
+            <form action="/create_quiz" method="post">
+                <label for="quiz-title">Quiz Title:</label><br>
+                <input type="text" id="quiz-title" name="quiz-title"><br>
+            
+                <label for="question-type">Question Type:</label><br>
+                <select id="question-type" name="question-type">
+                    <option value="true-false">True/False</option>
+                    <option value="multiple-choice">Multiple Choice</option>
+                    <option value="drag-drop">Drag and Drop</option>
+                </select><br>
+            
+                <label for="question-text">Question Text:</label><br>
+                <input type="text" id="question-text" name="question-text"><br>
+            
+                <label for="correct-answer">Correct Answer:</label><br>
+                <input type="text" id="correct-answer" name="correct-answer"><br>
+            
+                <!-- Add more fields for additional questions -->
+            
+                <input type="submit" value="Create Quiz">
+            </form>
+
         </body>
         </html>
