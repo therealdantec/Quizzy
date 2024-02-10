@@ -1,7 +1,8 @@
 import json
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, session, url_for
 
 app = Flask(__name__)
+app.secret_key = 'secret'
 
 @app.route('/')
 def home():
@@ -24,6 +25,7 @@ def login():
         with open('users.json', 'r') as f:
             users = json.load(f)
         if username in users and users[username] == password:
+            session['username'] = username  # Add this line
             return redirect(url_for('quiz_homepage'))  # changed from 'create_quiz' to 'home'
     return render_template('login.html')
 
@@ -40,12 +42,38 @@ def create_account():
         users[username] = password
         with open('users.json', 'w') as f:
             json.dump(users, f)
+        session['username'] = username  # Add this line
         return redirect(url_for('quiz_homepage'))  # changed from 'create_quiz' to 'home'
     return render_template('create_account.html')
 
 @app.route('/create_quiz', methods=['GET', 'POST'])
 def create_quiz():
-    # TODO: Add code to handle quiz creation
+    if request.method == 'POST':
+        # Get the quiz data from the form
+        quiz_name = request.form['quiz_name']
+        question = request.form['question']
+        answers = request.form.getlist('answers')
+        correct_answer = request.form['correct_answer']
+        username = session['username']
+
+        # Save the quiz under the username
+        quiz = {'quiz name': quiz_name, 'question': question, 'answers': answers, 'correct_answer': correct_answer}
+        try:
+            with open('quizzes.json', 'r') as f:
+                try:
+                    quizzes = json.load(f)
+                except json.JSONDecodeError:
+                    quizzes = {}  # If the file is empty, start with an empty dictionary
+        except FileNotFoundError:
+            quizzes = {}  # If the file doesn't exist yet, start with an empty dictionary
+        if username in quizzes:
+            quizzes[username].append(quiz)
+        else:
+            quizzes[username] = [quiz]
+        with open('quizzes.json', 'w') as f:
+            json.dump(quizzes, f)
+
+        return redirect(url_for('quiz_homepage'))
     return render_template('create_quiz.html')
 
 @app.route('/quiz')

@@ -1,0 +1,5 @@
+{% if session['username'] %}
+    <div style="position: absolute; top: 0; right: 0;">
+        Logged in as {{ session['username'] }}
+    </div>
+{% endif %}
