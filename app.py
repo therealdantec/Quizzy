@@ -50,7 +50,10 @@ def create_quiz():
         username = session['username']  # Assuming you're using Flask's session to store the logged-in user
         new_quiz = {'quiz name': quiz_name, 'question': question, 'answers': answers, 'correct_answer': correct_answer, 'username': username}
         with open('quizzes.json', 'r+') as f:
-            quizzes = json.load(f)
+            try:
+                quizzes = json.load(f)
+            except json.JSONDecodeError:
+                quizzes = []
             quizzes.append(new_quiz)
             f.seek(0)
             json.dump(quizzes, f)
@@ -66,8 +69,8 @@ def quiz_homepage():
         with open('quizzes.json', 'r') as f:
             all_quizzes = json.load(f)
     except json.JSONDecodeError:
-        all_quizzes = {}
-    user_quizzes = [quiz for quiz_list in all_quizzes.values() for quiz in quiz_list if quiz['username'] == username]
+        all_quizzes = []
+    user_quizzes = [quiz for quiz in all_quizzes if quiz.get('username') == username]
     return render_template('quiz_homepage.html', quizzes=user_quizzes)
 
 if __name__ == '__main__':
