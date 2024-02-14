@@ -98,16 +98,43 @@
             <div class="quadrant blueB"></div>
 
             <form action="/create_quiz" method="post">
-                <label for="quiz_name">Quiz Name:</label><br>
-                <input type="text" id="quiz_name" name="quiz_name"><br>
-                <label for="question">Question:</label><br>
-                <input type="text" id="question" name="question"><br>
-                <label for="answers">Answers:</label><br>
-                <input type="text" id="answers" name="answers"><br>
-                <label for="correct_answer">Correct Answer:</label><br>
-                <input type="text" id="correct_answer" name="correct_answer"><br>
-                <input type="submit" value="Submit">
+                Quiz name: <input type="text" name="quiz_name"><br>
+                <div id="questions">
+                    <div class="question">
+                        Question: <input type="text" name="questions[]"><br>
+                        <div class="answers">
+                            Answer: <input type="text" name="answers_0[]">
+                            Correct? <input type="checkbox" name="correct_0[]" value="0"><br>
+                        </div>
+                        <button type="button" onclick="addAnswer(this)">Add another answer</button><br>
+                    </div>
+                </div>
+                <button type="button" onclick="addQuestion()">Add another question</button><br>
+                <input type="submit" value="Create Quiz">
             </form>
 
+            <script>
+                function addQuestion() {
+                    var questionsDiv = document.getElementById('questions');
+                    var questionCount = questionsDiv.getElementsByClassName('question').length;
+                    var newQuestionHTML = '<div class="question">' +
+                        'Question: <input type="text" name="questions[]"><br>' +
+                        '<div class="answers">' +
+                        'Answer: <input type="text" name="answers_' + questionCount + '[]">' +
+                        'Correct? <input type="checkbox" name="correct_' + questionCount + '[]" value="0"><br>' +
+                        '</div>' +
+                        '<button type="button" onclick="addAnswer(this)">Add another answer</button><br>' +
+                        '</div>';
+                    questionsDiv.innerHTML += newQuestionHTML;
+                }
+                
+                function addAnswer(button) {
+                    var answersDiv = button.previousElementSibling;
+                    var answerCount = answersDiv.getElementsByTagName('input').length / 2;
+                    var newAnswerHTML = 'Answer: <input type="text" name="answers_' + answerCount + '[]">' +
+                        'Correct? <input type="checkbox" name="correct_' + answerCount + '[]" value="0"><br>';
+                    answersDiv.innerHTML += newAnswerHTML;
+                }
+            </script>
         </body>
         </html>

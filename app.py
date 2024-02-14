@@ -43,20 +43,22 @@ def create_account():
 @app.route('/create_quiz', methods=['GET', 'POST'])
 def create_quiz():
     if request.method == 'POST':
-        quiz_name = request.form['quiz_name']
-        question = request.form['question']
-        answers = request.form['answers']
-        correct_answer = request.form['correct_answer']
-        username = session['username']  # Assuming you're using Flask's session to store the logged-in user
-        new_quiz = {'quiz name': quiz_name, 'question': question, 'answers': answers, 'correct_answer': correct_answer, 'username': username}
+        quiz_name = request.form.get('quiz_name')
+        questions = request.form.getlist('questions[]')
+        quizzes = []
+        for i, question in enumerate(questions):
+            answers = request.form.getlist('answers_' + str(i) + '[]')
+            correct = request.form.getlist('correct_' + str(i) + '[]')
+            quiz = {'quiz name': quiz_name, 'question': question, 'answers': answers, 'correct_answer': correct}
+            quizzes.append(quiz)
         with open('quizzes.json', 'r+') as f:
             try:
-                quizzes = json.load(f)
+                existing_quizzes = json.load(f)
             except json.JSONDecodeError:
-                quizzes = []
-            quizzes.append(new_quiz)
+                existing_quizzes = []
+            existing_quizzes.extend(quizzes)
             f.seek(0)
-            json.dump(quizzes, f)
+            json.dump(existing_quizzes, f)
         return redirect(url_for('quiz_homepage'))
     return render_template('create_quiz.html')
 
