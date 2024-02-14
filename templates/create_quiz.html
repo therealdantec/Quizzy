@@ -129,10 +129,12 @@
                 }
                 
                 function addAnswer(button) {
+                    var questionDiv = button.parentElement;
+                    var questionNumber = Array.from(questionDiv.parentElement.children).indexOf(questionDiv);
                     var answersDiv = button.previousElementSibling;
                     var answerCount = answersDiv.getElementsByTagName('input').length / 2;
-                    var newAnswerHTML = 'Answer: <input type="text" name="answers_' + answerCount + '[]">' +
-                        'Correct? <input type="checkbox" name="correct_' + answerCount + '[]" value="0"><br>';
+                    var newAnswerHTML = 'Answer: <input type="text" name="answers_' + questionNumber + '[]">' +
+                        'Correct? <input type="checkbox" name="correct_' + questionNumber + '[]" value="' + answerCount + '"><br>';
                     answersDiv.innerHTML += newAnswerHTML;
                 }
             </script>

@@ -1,1 +1,41 @@
-[{"quiz name": "Apples", "question": "What color is an apple?", "answers": "red", "correct_answer": "red", "username": "1"}, {"quiz name": "banana", "question": "what color is banana", "answers": "yellow", "correct_answer": "yellow", "username": "1"}, {"quiz name": "Apples and Bananas", "question": "What color is an apple?", "answers": ["Red"], "correct_answer": ["0"]}, {"quiz name": "Apples and Bananas", "question": "What color is a banana?", "answers": ["Yellow"], "correct_answer": ["0"]}]
+[
+    {
+        "quiz name": "Apples",
+        "question": "What color is an apple?",
+        "answers": "red",
+        "correct_answer": "red",
+        "username": "1"
+    },
+    {
+        "quiz name": "Apples",
+        "question": "What color is an apple?",
+        "answers": [
+            "Red"
+        ],
+        "correct_answer": [
+            "0"
+        ]
+    },
+    {
+        "quiz name": "Orange",
+        "question": "what color is an orange?",
+        "answers": [
+            "Red",
+            "Orange"
+        ],
+        "correct_answer": [
+            "0"
+        ]
+    },
+    {
+        "quiz name": "Super Bowl",
+        "question": "Who won the Super Bowl?",
+        "answers": [
+            "49ers",
+            "Chiefs"
+        ],
+        "correct_answer": [
+            "1"
+        ]
+    }
+]

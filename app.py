@@ -58,7 +58,7 @@ def create_quiz():
                 existing_quizzes = []
             existing_quizzes.extend(quizzes)
             f.seek(0)
-            json.dump(existing_quizzes, f)
+            json.dump(existing_quizzes, f, indent=4)  # Use 4 spaces for indentation
         return redirect(url_for('quiz_homepage'))
     return render_template('create_quiz.html')
 
