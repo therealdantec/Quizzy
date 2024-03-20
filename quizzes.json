@@ -37,5 +37,16 @@
         "correct_answer": [
             "1"
         ]
+    },
+    {
+        "quiz name": "Presidents",
+        "question": "Who was the first president?",
+        "answers": [
+            "Washington",
+            "Lincoln"
+        ],
+        "correct_answer": [
+            "0"
+        ]
     }
 ]
