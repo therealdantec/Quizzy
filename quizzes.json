@@ -1,52 +1,229 @@
-[
-    {
-        "quiz name": "Apples",
-        "question": "What color is an apple?",
-        "answers": "red",
-        "correct_answer": "red",
-        "username": "1"
-    },
-    {
-        "quiz name": "Apples",
-        "question": "What color is an apple?",
-        "answers": [
-            "Red"
-        ],
-        "correct_answer": [
-            "0"
-        ]
-    },
-    {
-        "quiz name": "Orange",
-        "question": "what color is an orange?",
-        "answers": [
-            "Red",
-            "Orange"
-        ],
-        "correct_answer": [
-            "0"
-        ]
-    },
-    {
-        "quiz name": "Super Bowl",
-        "question": "Who won the Super Bowl?",
-        "answers": [
-            "49ers",
-            "Chiefs"
-        ],
-        "correct_answer": [
-            "1"
-        ]
-    },
-    {
-        "quiz name": "Presidents",
-        "question": "Who was the first president?",
-        "answers": [
-            "Washington",
-            "Lincoln"
-        ],
-        "correct_answer": [
-            "0"
-        ]
-    }
-]
+{
+    "quizzes": [
+        {
+            "quiz_id": "Quiz1",
+            "owner": "user2",
+            "participants": [
+                {
+                    "username": "user1",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": "London"
+                        },
+                        {
+                            "question_id": 2,
+                            "selected_option": "Mars"
+                        }
+                    ],
+                    "score": 1
+                }
+            ],
+            "questions": [
+                {
+                    "question": "What is the capital of France?",
+                    "options": [
+                        "Paris",
+                        "London",
+                        "Berlin",
+                        "Madrid"
+                    ],
+                    "correct_answer": "Paris",
+                    "time": 10
+                },
+                {
+                    "question": "Which planet is known as the Red Planet?",
+                    "options": [
+                        "Earth",
+                        "Venus",
+                        "Mars",
+                        "Jupiter"
+                    ],
+                    "correct_answer": "Mars",
+                    "time": 10
+                }
+            ]
+        },
+        {
+            "quiz_id": "Apples",
+            "owner": "user1",
+            "participants": [
+                {
+                    "username": "user3",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": -1
+                        }
+                    ],
+                    "score": 0
+                },
+                {
+                    "username": "user2",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": "red"
+                        }
+                    ],
+                    "score": 1
+                }
+            ],
+            "questions": [
+                {
+                    "question": "What color is an apple?",
+                    "options": [
+                        "red",
+                        "blue",
+                        "orange"
+                    ],
+                    "correct_answer": "red",
+                    "time": 8
+                }
+            ]
+        },
+        {
+            "quiz_id": "Football",
+            "owner": "user1",
+            "participants": [
+                {
+                    "username": "user3",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": -1
+                        }
+                    ],
+                    "score": 0
+                },
+                {
+                    "username": "user2",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": "49ers"
+                        }
+                    ],
+                    "score": 1
+                }
+            ],
+            "questions": [
+                {
+                    "question": "Who plays in San Fran?",
+                    "options": [
+                        "Chiefs",
+                        "49ers"
+                    ],
+                    "correct_answer": "49ers",
+                    "time": 6
+                }
+            ]
+        },
+        {
+            "quiz_id": "Ocean",
+            "owner": "user1",
+            "participants": [
+                {
+                    "username": "user3",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": -1
+                        }
+                    ],
+                    "score": 0
+                },
+                {
+                    "username": "user2",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": "blue"
+                        }
+                    ],
+                    "score": 1
+                }
+            ],
+            "questions": [
+                {
+                    "question": "what color is the ocean",
+                    "options": [
+                        "blue",
+                        "purple",
+                        "brown"
+                    ],
+                    "correct_answer": "blue",
+                    "time": 10
+                }
+            ]
+        },
+        {
+            "quiz_id": "Videogames",
+            "owner": "user1",
+            "participants": [
+                {
+                    "username": "user2",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": "Xbox"
+                        }
+                    ],
+                    "score": 0
+                }
+            ],
+            "questions": [
+                {
+                    "question": "Playstation or Xbox",
+                    "options": [
+                        "Ps5",
+                        "Xbox",
+                        "PC"
+                    ],
+                    "correct_answer": "Ps5",
+                    "time": 10
+                }
+            ]
+        },
+        {
+            "quiz_id": "Food",
+            "owner": "user1",
+            "participants": [
+                {
+                    "username": "user2",
+                    "responses": [
+                        {
+                            "question_id": 1,
+                            "selected_option": "hamburger"
+                        },
+                        {
+                            "question_id": 2,
+                            "selected_option": "pizza"
+                        }
+                    ],
+                    "score": 2
+                }
+            ],
+            "questions": [
+                {
+                    "question": "hot dog or hamburger?",
+                    "options": [
+                        "hot dog",
+                        "hamburger"
+                    ],
+                    "correct_answer": "hamburger",
+                    "time": 9
+                },
+                {
+                    "question": "pasta or pizza",
+                    "options": [
+                        "pizza",
+                        "pasta"
+                    ],
+                    "correct_answer": "pizza",
+                    "time": 8
+                }
+            ]
+        }
+    ]
+}

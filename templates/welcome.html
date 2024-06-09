@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quiz Homepage</title>
+    <title>Welcome</title>
     <style>
         body {
             display: flex;
@@ -90,19 +90,31 @@
                 .no-underline {
                     text-decoration: none;
                 }
-            </style>
-        </head>
-        <body>
-            <div id="title">Quiz Homepage</div>
-            <div class="quadrant orange"></div>
-            <div class="quadrant blue"></div>
-            <div class="quadrant orangeB"></div>
-            <div class="quadrant blueB"></div>
-        
-            <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
-                <a href="/create_quiz" class="no-underline" style="align-self: flex-end;">
-                    <button class="button">Create Quiz</button>
-                </a>
-            </div>
-        </body>
-        </html>
+        </style>
+</head>
+<body>
+    <div id="title">Welcome To Quizzy</div>
+    <div class="quadrant orange"></div>
+    <div class="quadrant blue"></div>
+    <div class="quadrant orangeB"></div>
+    <div class="quadrant blueB"></div>
+
+    <div id="buttons" style="display: flex; flex-direction: column; align-items: center;">
+        {% if logged_in %}
+            <a href="/select_lobby" class="no-underline" style="align-self: flex-end;">
+                <button class="button">Join a Lobby</button>
+            </a>
+            <a href="/logout" class="no-underline" style="align-self: flex-end;">
+                <button class="button">Logout</button>
+            </a>
+        {% else %}
+            <a href="/login" class="no-underline" style="align-self: flex-end; align-items: center;">
+                <button class="button">Log In</button>
+            </a>
+            <a href="/register" class="no-underline" style="align-self: flex-end; align-items: center;">
+                <button class="button">Register</button>
+            </a>
+        {% endif %}
+    </div>
+</body>
+</html>

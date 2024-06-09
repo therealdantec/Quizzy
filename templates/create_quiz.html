@@ -88,7 +88,7 @@
                     text-decoration: none;
                 }
             </style>
-        </head>
+    </head>
         <body>
 
             <div id="title">Create Quiz</div>
@@ -99,15 +99,9 @@
 
             <form action="/create_quiz" method="post">
                 Quiz name: <input type="text" name="quiz_name"><br>
+        
                 <div id="questions">
-                    <div class="question">
-                        Question: <input type="text" name="questions[]"><br>
-                        <div class="answers">
-                            Answer: <input type="text" name="answers_0[]">
-                            Correct? <input type="checkbox" name="correct_0[]" value="0"><br>
-                        </div>
-                        <button type="button" onclick="addAnswer(this)">Add another answer</button><br>
-                    </div>
+                    <!-- JavaScript will insert question blocks here -->
                 </div>
                 <button type="button" onclick="addQuestion()">Add another question</button><br>
                 <input type="submit" value="Create Quiz">
@@ -119,6 +113,7 @@
                     var questionCount = questionsDiv.getElementsByClassName('question').length;
                     var newQuestionHTML = '<div class="question">' +
                         'Question: <input type="text" name="questions[]"><br>' +
+                        'Time: <input type="text" name="times[]"><br>' +
                         '<div class="answers">' +
                         'Answer: <input type="text" name="answers_' + questionCount + '[]">' +
                         'Correct? <input type="checkbox" name="correct_' + questionCount + '[]" value="0"><br>' +
@@ -127,7 +122,7 @@
                         '</div>';
                     questionsDiv.innerHTML += newQuestionHTML;
                 }
-                
+
                 function addAnswer(button) {
                     var questionDiv = button.parentElement;
                     var questionNumber = Array.from(questionDiv.parentElement.children).indexOf(questionDiv);
@@ -139,4 +134,4 @@
                 }
             </script>
         </body>
-        </html>
+</html>

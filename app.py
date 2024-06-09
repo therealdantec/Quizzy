@@ -1,79 +1,430 @@
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask_socketio import SocketIO, join_room, leave_room, emit
 import json
-from flask import Flask, render_template, request, redirect, session, url_for
 
 app = Flask(__name__)
-app.secret_key = 'secret'
+app.config['SECRET_KEY'] = 'your_secret_key'
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# In-memory storage for lobby participants
+# Updated structure for lobbies
+# Each lobby now includes a list of members and the admin's username
+lobbies = {
+    'Lobby 1': {'members': [], 'admin': ''},
+    'Lobby 2': {'members': [], 'admin': ''},
+    'Lobby 3': {'members': [], 'admin': ''}
+}
+
+
+# Utility functions for users and lobbies
+def load_users():
+    with open('users.json') as f:
+        data = json.load(f)
+    return data.get("users", [])
+
+def save_user(users):
+    with open('users.json', 'w') as f:
+        json.dump({"users": users}, f)
+
+
+
+def load_quizzes():
+    try:
+        with open('quizzes.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {'quizzes': []}  # Return an empty list if the file is not found
+    except json.JSONDecodeError:
+        return {'quizzes': []}  # Return an empty list if the file is corrupt or empty
+
+
+
+def save_quizzes(quizzes):
+    print("SAVING QUIZZES")
+    with open('quizzes.json', 'w') as file:
+        json.dump(quizzes, file, indent=4)
+
+
+
+
+
 
 @app.route('/')
 def home():
-    return render_template('menu.html')
+    # Check if user is logged in already
+    if session.get('logged_in'):
+        # User is logged in, offer to go to select lobby or log out
+        return render_template('welcome.html', logged_in=True)
+    else:
+        # User is not logged in, show the welcome page with login option
+        return render_template('welcome.html', logged_in=False)
 
-@app.route('/join_quiz', methods=['GET', 'POST'])
-def join():
+
+
+
+
+@app.route('/select_lobby', methods=['GET', 'POST'])
+def select_lobby():
+    
+    
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    
+    quizzes = load_quizzes()
+    print(quizzes)
+    owned_quizzes = [quiz for quiz in quizzes['quizzes'] if quiz['owner'] == session['username']]
+    print(session['username'])
+    print(owned_quizzes)
+        
+    
     if request.method == 'POST':
-        # Handle the POST request here. For example, you might get the code from the form
-        # and use it to join the user to a game.
-        code = request.form.get('code')
-        # TODO: Add code to handle the game joining logic
-    return render_template('join_quiz.html')
+        # Handle Lobby Switching
+        # Extract the previous lobby from the session
+        previous_lobby = session.get('lobby', None)
+        new_lobby_code = request.form.get('lobby_code').strip()
+        new_lobby = 'Lobby ' + new_lobby_code if new_lobby_code else request.form.get('lobby')
+        
+        
+
+        if previous_lobby and previous_lobby in lobbies and session['username'] in lobbies[previous_lobby]['members']:
+            lobbies[previous_lobby]['members'].remove(session['username'])
+            socketio.emit('lobby_updated', {'members': lobbies[previous_lobby]['members']}, room=previous_lobby)
+            leave_room(previous_lobby)
+        
+        # Handle joining a new lobby
+        lobby_code = request.form.get('lobby_code').strip()
+        chosen_lobby = None
+        if lobby_code:
+            chosen_lobby = lobby_code
+            if chosen_lobby not in lobbies:
+                lobbies[chosen_lobby] = {'members': [session['username']], 'admin': session['username']}
+            elif session['username'] not in lobbies[chosen_lobby]['members']:
+                lobbies[chosen_lobby]['members'].append(session['username'])
+                
+                
+                # Find the corresponding quiz
+                quiz = next((q for q in quizzes['quizzes'] if q['quiz_id'] == chosen_lobby), None)
+                if not quiz['owner'] == session['username']:
+                    if quiz:
+                        # Now find the participant
+                        participant = next((p for p in quiz['participants'] if (p['username'] == session['username'])), None)
+                        
+                        if not participant :
+                            # Initialize and add the participant if they don't exist
+                            participant = {
+                                'username': session['username'],
+                                'responses': [{'question_id': i + 1, 'selected_option': -1} for i, _ in enumerate(quiz['questions'])],
+                                'score': 0  # Initialize score
+                            }
+                            quiz['participants'].append(participant)
+                            save_quizzes(quizzes)  # Save updates to file or database
+
+    
+                
+        else:
+            chosen_lobby = request.form.get('lobby')
+            if session['username'] not in lobbies[chosen_lobby]['members']:
+                lobbies[chosen_lobby]['members'].append(session['username'])
+                
+                
+                # Find the corresponding quiz
+                quiz = next((q for q in quizzes['quizzes'] if q['quiz_id'] == chosen_lobby), None)
+                if not quiz['owner'] == session['username']:
+                    if quiz:
+                        # Now find the participant
+                        participant = next((p for p in quiz['participants'] if (p['username'] == session['username'])), None)
+                        
+                        if not participant :
+                            # Initialize and add the participant if they don't exist
+                            participant = {
+                                'username': session['username'],
+                                'responses': [{'question_id': i + 1, 'selected_option': -1} for i, _ in enumerate(quiz['questions'])],
+                                'score': 0  # Initialize score
+                            }
+                            quiz['participants'].append(participant)
+                            save_quizzes(quizzes)  # Save updates to file or database
+            
+        session['lobby'] = chosen_lobby
+        # Emit the event after updating the lobby's members list
+        # Modify the emit inside the select_lobby function and on_join function to include members list
+        print(lobbies)
+        print(session)
+        socketio.emit('lobby_updated', {'members': lobbies[chosen_lobby]['members']}, room=chosen_lobby)
+        return redirect(url_for('lobby', lobby_name=chosen_lobby))
+    
+    return render_template('select_lobby.html', lobbies=lobbies.keys(), quizzes=owned_quizzes)
+
+
+
+
+
+@app.route('/quiz_history')
+def quiz_history():
+    if 'username' not in session:
+        return redirect(url_for('login'))  # Ensure the user is logged in
+    username = session['username']  # Ensure the user is logged in
+    quizzes = load_quizzes()  # Assuming this function is defined to load your quizzes data
+
+    user_quizzes = [
+        quiz for quiz in quizzes['quizzes']
+        if any(participant['username'] == username for participant in quiz['participants'])
+    ]
+
+    owner_quizzes = []
+    for quiz in quizzes['quizzes']:
+        if quiz['owner'] == username:
+            # Calculate quiz statistics
+            total_scores = [p['score'] for p in quiz['participants']]
+            average_score = sum(total_scores) / len(total_scores) if total_scores else 0
+            highest_score = max(total_scores) if total_scores else 0
+            lowest_score = min(total_scores) if total_scores else 0
+            
+            # Calculate percentage of correct answers per question
+            question_stats = []
+            for index, question in enumerate(quiz['questions']):
+                total_responses = len([p for p in quiz['participants'] if p['responses']])
+                correct_responses = len([
+                    p for p in quiz['participants']
+                    for r in p['responses']
+                    if r['question_id'] == index + 1 and r['selected_option'] == question['correct_answer']
+                ])
+                correct_percentage = (correct_responses / total_responses * 100) if total_responses else 0
+                question_stats.append({
+                    'question': question['question'],
+                    'correct_percentage': correct_percentage,
+                    'correct_answer': question['correct_answer'],
+                })
+
+            owner_quizzes.append({
+                'quiz_id': quiz['quiz_id'],
+                'average_score': average_score,
+                'highest_score': highest_score,
+                'lowest_score': lowest_score,
+                'question_stats': question_stats,
+                'participants': quiz['participants']
+            })
+
+    return render_template('quiz_history.html', user_quizzes=user_quizzes, owner_quizzes=owner_quizzes)
+
+
+
+
+@app.route('/lobby/<lobby_name>')
+def lobby(lobby_name):
+    if not session.get('logged_in') or 'lobby' not in session:
+        return redirect(url_for('select_lobby'))
+    lobby_info = lobbies.get(lobby_name, {})
+    users_in_lobby = lobby_info.get('members', [])
+    lobby_admin = lobby_info.get('admin', '')
+    quizzes = load_quizzes()
+    lobby_quiz = next((quiz for quiz in quizzes['quizzes'] if quiz['quiz_id'] == lobby_name), None)
+    print(lobby_quiz)
+
+    
+    # Now passing both users_in_lobby and lobby_admin to the template
+    return render_template('lobby.html', lobby_name=lobby_name, users=users_in_lobby, lobby_admin=lobby_admin, quiz=lobby_quiz)
+
+
+# SocketIO event for joining a lobby
+@socketio.on('join')
+def on_join(data):
+    lobby_name = data['lobby_name']
+    join_room(lobby_name)
+    # If needed, emit the current state to just the user who joined
+    emit('lobby_updated', {'members': lobbies[lobby_name]['members']}, to=request.sid)
+
+
+
+@app.route('/check_membership/<lobby_name>')
+def check_membership(lobby_name):
+    if 'username' in session and 'lobby' in session:
+        is_member = session['username'] in lobbies.get(lobby_name, {}).get('members', [])
+        return jsonify(is_member=is_member)
+    return jsonify(is_member=False)
+
+
+
+@app.route('/remove_user/<lobby_name>/<username>', methods=['POST'])
+def remove_user(lobby_name, username):
+    if 'logged_in' in session and session['username'] == lobbies[lobby_name]['admin']:
+        if username in lobbies[lobby_name]['members']:
+            print(lobbies)
+            lobbies[lobby_name]['members'].remove(username)
+            # Broadcast updated lobby members
+            socketio.emit('lobby_updated', {
+                'members': lobbies[lobby_name]['members'],
+                'admin': lobbies[lobby_name]['admin']
+            }, room=lobby_name)
+            # Notify the removed user if online
+            print(lobbies)
+            return jsonify({'success': True})
+    return jsonify({'success': False}), 403
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        users = json.load(open('users.json'))
-        if username in users and users[username] == password:
+
+        users = load_users()
+        user = next((user for user in users if user['username'] == username), None)
+
+        if user and user['password'] == password:
+            session['logged_in'] = True
             session['username'] = username
-            return redirect(url_for('quiz_homepage'))
+            return redirect(url_for('select_lobby'))
+        else:
+            flash('Invalid username or password')
     return render_template('login.html')
 
-@app.route('/create_account', methods=['GET', 'POST'])
-def create_account():
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
-        users = json.load(open('users.json'))
-        users[username] = password
-        json.dump(users, open('users.json', 'w'))
-        session['username'] = username
-        return redirect(url_for('quiz_homepage'))
-    return render_template('create_account.html')
+        password = request.form['password']  # Save the password directly without hashing
 
-@app.route('/create_quiz', methods=['GET', 'POST'])
+        users = load_users()
+
+        if any(user['username'] == username for user in users):
+            flash('Username already exists.')
+        else:
+            users.append({"username": username, "password": password})
+            save_user(users)
+            return redirect(url_for('login'))
+    return render_template('register.html')
+
+
+@app.route('/logout')
+def logout():
+    current_lobby = session.get('lobby')
+    if current_lobby and current_lobby in lobbies and session['username'] in lobbies[current_lobby]['members']:
+        lobbies[current_lobby]['members'].remove(session['username'])
+        socketio.emit('lobby_updated', {'members': lobbies[current_lobby]['members']}, room=current_lobby)
+        leave_room(current_lobby)
+
+    session.clear()
+    return redirect(url_for('home'))
+
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    username = session.get('username')
+    current_lobby = session.get('lobby')
+    if current_lobby and username and username in lobbies[current_lobby]['members']:
+        lobbies[current_lobby]['members'].remove(username)
+        socketio.emit('lobby_updated', {'members': lobbies[current_lobby]['members']}, room=current_lobby)
+        leave_room(current_lobby)
+        
+
+
+@socketio.on('page_change')
+def handle_page_change(data):
+    lobby_name = data['lobby_name']
+    new_page = data['newPage']
+    
+    
+    # Verify if the user is the admin before broadcasting
+    if 'logged_in' in session and session['username'] == lobbies[lobby_name]['admin']:
+        print("CHANGING PAGE")
+        emit('change_page', {'newPage': new_page}, to=lobby_name)
+
+
+
+@socketio.on('submit_answer')
+def submit_answer(data):
+    username = session['username']
+    question_id = data['question_id']
+    selected_option = data['selected_option']
+    quiz_id = data['quiz_id']
+
+    # Load quizzes and find the correct quiz and participant
+    quizzes = load_quizzes()
+    quiz = next((q for q in quizzes['quizzes'] if q['quiz_id'] == quiz_id), None)
+    if quiz:
+        participant = next((p for p in quiz['participants'] if p['username'] == username), None)
+        if participant:
+            # Find the correct response index and update it
+            response = next((r for r in participant['responses'] if r['question_id'] == question_id), None)
+            if response:
+                selected_answer = selected_option
+                response['selected_option'] = selected_answer
+                print(question_id)
+                
+            else:
+                selected_answer = selected_option
+                participant['responses'].append({
+                    'question_id': question_id,
+                    'selected_option': selected_answer,
+                })
+                
+            if question_id == 1:
+                    participant['score'] = 0
+
+            if selected_answer == quiz['questions'][question_id - 1]['correct_answer']:
+                participant['score'] += 1
+
+            save_quizzes(quizzes)
+
+        emit('answer_received', {'status': 'success', 'question_id': question_id, 'username': username}, broadcast=True)
+
+
+
+@socketio.on('get_leaderboard')
+def get_leaderboard(data):
+    quiz_id = data['quiz_id']
+    
+    quizzes = load_quizzes()
+    quiz = next((q for q in quizzes['quizzes'] if q['quiz_id'] == quiz_id), None)
+    if quiz:
+        leaderboard_data = [{'username': p['username'], 'score': p['score']} for p in quiz['participants']]
+        emit('update_leaderboard', {'leaderboard': leaderboard_data}, to=quiz_id)
+
+
+######### QUIZZES #########
+
+
+
+@app.route('/create_quiz' , methods=['GET', 'POST'])
 def create_quiz():
     if request.method == 'POST':
-        quiz_name = request.form.get('quiz_name')
+        quiz_name = request.form['quiz_name']
+        owner = session['username']
         questions = request.form.getlist('questions[]')
-        quizzes = []
-        for i, question in enumerate(questions):
-            answers = request.form.getlist('answers_' + str(i) + '[]')
-            correct = request.form.getlist('correct_' + str(i) + '[]')
-            quiz = {'quiz name': quiz_name, 'question': question, 'answers': answers, 'correct_answer': correct}
-            quizzes.append(quiz)
-        with open('quizzes.json', 'r+') as f:
-            try:
-                existing_quizzes = json.load(f)
-            except json.JSONDecodeError:
-                existing_quizzes = []
-            existing_quizzes.extend(quizzes)
-            f.seek(0)
-            json.dump(existing_quizzes, f, indent=4)  # Use 4 spaces for indentation
-        return redirect(url_for('quiz_homepage'))
+        times = request.form.getlist('times[]')
+        answers = [request.form.getlist('answers_{}[]'.format(i)) for i in range(len(questions))]
+        correct = [request.form.getlist('correct_{}[]'.format(i)) for i in range(len(questions))]
+
+        quiz = {
+            'quiz_id': quiz_name,
+            'owner': owner,
+            'participants': [],
+            'questions': [
+                {
+                    'question': questions[i],
+                    'options': answers[i],
+                    'correct_answer': answers[i][int(correct[i][0])],
+                    'time': int(times[i])
+                } for i in range(len(questions))
+            ]
+        }
+
+        quizzes = load_quizzes()
+        quizzes['quizzes'].append(quiz)
+        save_quizzes(quizzes)
+        return redirect(url_for('select_lobby'))
     return render_template('create_quiz.html')
 
-@app.route('/quiz_homepage')
-def quiz_homepage():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-    username = session['username']  # Assuming you're using Flask's session to store the logged-in user
-    try:
-        with open('quizzes.json', 'r') as f:
-            all_quizzes = json.load(f)
-    except json.JSONDecodeError:
-        all_quizzes = []
-    user_quizzes = [quiz for quiz in all_quizzes if quiz.get('username') == username]
-    return render_template('quiz_homepage.html', quizzes=user_quizzes)
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5500)
+    socketio.run(app, debug=True)
